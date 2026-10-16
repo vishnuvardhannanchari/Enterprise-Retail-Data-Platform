@@ -1,0 +1,6 @@
+Dataset,Rows,Columns,Missing Values,Duplicate Rows,Status
+customers_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
+products_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
+orders_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
+payments_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
+shipments_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
