@@ -1,12 +1,8 @@
-
 from pathlib import Path
 import pandas as pd
 
-# Project directory
-BASE_DIR = Path(__file__).resolve().parent
-
-# Cleaned data directory
-DATA_DIR = BASE_DIR / "Cleaned_Data"
+# Folder containing this script and the cleaned CSV files
+DATA_DIR = Path(__file__).resolve().parent
 
 # Dataset filenames
 FILES = [
@@ -16,17 +12,21 @@ FILES = [
     "payments_clean.csv",
     "shipments_clean.csv",
 ]
-# Store results
+
+# Store data quality results
 results = []
 
-print("\nRETAILX DATA QUALITY SUMMARY")
-print("=" * 50)
+print("\n" + "=" * 70)
+print("RETAILX DATA QUALITY REPORT")
+print("=" * 70)
 
 for filename in FILES:
     file_path = DATA_DIR / filename
 
-    if not file_path.exists():
-        print(f"\nFile not found: {filename}")
+    # Check whether the dataset exists
+    if not file_path.is_file():
+        print(f"\nWARNING: File not found: {filename}")
+
         results.append({
             "Dataset": filename,
             "Rows": 0,
@@ -37,32 +37,71 @@ for filename in FILES:
         })
         continue
 
-    df = pd.read_csv(file_path)
+    try:
+        # Read the cleaned dataset
+        df = pd.read_csv(file_path)
 
-    rows = len(df)
-    columns = len(df.columns)
-    missing = int(df.isnull().sum().sum())
-    duplicates = int(df.duplicated().sum())
+        # Calculate data quality metrics
+        rows = len(df)
+        columns = len(df.columns)
+        missing = int(df.isnull().sum().sum())
+        duplicates = int(df.duplicated().sum())
 
-    status = "PASS" if missing == 0 and duplicates == 0 else "CHECK"
+        # Determine status
+        status = "PASS" if missing == 0 and duplicates == 0 else "CHECK"
 
-    results.append({
-        "Dataset": filename,
-        "Rows": rows,
-        "Columns": columns,
-        "Missing Values": missing,
-        "Duplicate Rows": duplicates,
-        "Status": status,
-    })
+        # Store results
+        results.append({
+            "Dataset": filename,
+            "Rows": rows,
+            "Columns": columns,
+            "Missing Values": missing,
+            "Duplicate Rows": duplicates,
+            "Status": status,
+        })
 
-# Display report
+        print(f"\nProcessed: {filename}")
+
+    except Exception as error:
+        print(f"\nERROR processing {filename}: {error}")
+
+        results.append({
+            "Dataset": filename,
+            "Rows": 0,
+            "Columns": 0,
+            "Missing Values": "N/A",
+            "Duplicate Rows": "N/A",
+            "Status": "ERROR",
+        })
+
+# Create the report DataFrame
 report = pd.DataFrame(results)
-print(report.to_string(index=False))
 
-# Save report
-output_path = BASE_DIR / "data_quality_report.csv"
+# Display the results
+print("\n" + "-" * 70)
+print(report.to_string(index=False))
+print("-" * 70)
+
+# Save the report in the Cleaned_Data folder
+output_path = DATA_DIR / "data_quality_report.csv"
 report.to_csv(output_path, index=False)
 
-print("\n" + "=" * 50)
-print(f"Report saved to: {output_path}")
-print("Data quality report completed!")
+print(f"\nReport saved successfully:")
+print(output_path)
+
+# Summarize the report
+passed = sum(status == "PASS" for status in report["Status"])
+checked = sum(status == "CHECK" for status in report["Status"])
+failed = sum(
+    status in ["FILE NOT FOUND", "ERROR"]
+    for status in report["Status"]
+)
+
+print("\nFINAL SUMMARY")
+print(f"Datasets processed: {len(FILES)}")
+print(f"Passed: {passed}")
+print(f"Needs review: {checked}")
+print(f"Errors or missing files: {failed}")
+
+print("\nData quality report completed!")
+print("=" * 70)

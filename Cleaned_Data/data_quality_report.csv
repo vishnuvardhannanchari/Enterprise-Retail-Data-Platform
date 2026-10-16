@@ -1,6 +1,6 @@
 Dataset,Rows,Columns,Missing Values,Duplicate Rows,Status
-customers_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
-products_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
-orders_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
-payments_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
-shipments_clean.csv,0,0,N/A,N/A,FILE NOT FOUND
+customers_clean.csv,10000,7,0,0,PASS
+products_clean.csv,1000,6,0,0,PASS
+orders_clean.csv,50000,11,0,0,PASS
+payments_clean.csv,50000,5,0,0,PASS
+shipments_clean.csv,50000,9,0,0,PASS
